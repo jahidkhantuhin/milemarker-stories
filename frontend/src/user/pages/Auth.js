@@ -70,7 +70,7 @@ const Auth = () => {
     if (isLoginMode) {
       try {
         const responseData = await sendRequest(
-          'http://localhost:5000/api/users/login',
+          `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/users/login`,
           'POST',
           JSON.stringify({
             email: formState.inputs.email.value,
@@ -90,7 +90,7 @@ const Auth = () => {
         formData.append('password', formState.inputs.password.value);
         formData.append('image', formState.inputs.image.value);
         const responseData = await sendRequest(
-          'http://localhost:5000/api/users/signup',
+          `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/api/users/signup`,
           'POST',
           formData
         );
@@ -105,7 +105,9 @@ const Auth = () => {
       <ErrorModal error={error} onClear={clearError} />
       <Card className="authentication">
         {isLoading && <LoadingSpinner asOverlay />}
-        <h2>Login Required</h2>
+        <span className="eyebrow">YOUR NEXT STORY STARTS HERE</span>
+        <h2>{isLoginMode ? 'Welcome back.' : 'Join the journey.'}</h2>
+        <p className="auth-intro">Sign in to save places and share the details that make a trip unforgettable.</p>
         <hr />
         <form onSubmit={authSubmitHandler}>
           {!isLoginMode && (
@@ -152,6 +154,7 @@ const Auth = () => {
         <Button inverse onClick={switchModeHandler}>
           SWITCH TO {isLoginMode ? 'SIGNUP' : 'LOGIN'}
         </Button>
+        <p className="demo-hint"><strong>Preview mode</strong><br/>Try any email and password (6+ characters). Your changes stay in this browser.</p>
       </Card>
     </React.Fragment>
   );
