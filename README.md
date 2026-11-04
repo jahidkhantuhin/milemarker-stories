@@ -105,7 +105,7 @@ Milemarker Stories began as a React Context and Hooks travel-list exercise and h
 
 ## License
 
-No license has been selected. Add one before accepting external contributions or permitting reuse.
+This project is licensed under the MIT License. See the app://-/LICENSE file for details.
 
 ---
 
