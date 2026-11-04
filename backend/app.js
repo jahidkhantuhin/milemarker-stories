@@ -46,11 +46,8 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
-  if (req.file) {
-    fs.unlink(req.file.path, (err) => {
-      console.log(err);
-    });
-  }
+  const uploadedFiles = req.files || (req.file ? [req.file] : []);
+  uploadedFiles.forEach((file) => fs.unlink(file.path, () => {}));
   if (res.headerSent) {
     return next(error);
   }
@@ -67,7 +64,7 @@ mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
     const port = process.env.PORT || 5000;
-    app.listen(port, () => console.log(`Atlas API listening on port ${port}`));
+    app.listen(port, () => console.log(`Milemarker Stories API listening on port ${port}`));
   })
   .catch((err) => {
     console.log(err);

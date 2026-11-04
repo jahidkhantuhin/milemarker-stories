@@ -11,9 +11,9 @@ const TripPlanner = () => {
   const nights = places.reduce((total, place) => total + place.days, 0);
   const estimatedSpend = places.reduce((total, place) => total + place.days * place.budget, 0);
   const exportPlan = () => {
-    const text = ['ATLAS · MY TRIP BOARD', '', ...places.map((place, index) => `${index + 1}. ${place.address} — ${place.title}\n   ${place.days} days · Best ${place.bestTime} · approx. $${place.budget}/day\n   Field note: ${place.tip}`), '', `Estimated duration: ${nights} days`, `Indicative spend: $${estimatedSpend} per traveller (excluding travel to destination)`].join('\n');
+    const text = ['MILEMARKER STORIES · MY TRIP BOARD', '', ...places.map((place, index) => `${index + 1}. ${place.address} — ${place.title}\n   ${place.days} days · Best ${place.bestTime} · approx. $${place.budget}/day\n   Field note: ${place.tip}`), '', `Estimated duration: ${nights} days`, `Indicative spend: $${estimatedSpend} per traveller (excluding travel to destination)`].join('\n');
     const blob = new Blob([text], { type: 'text/plain' }); const href = URL.createObjectURL(blob); const anchor = document.createElement('a');
-    anchor.href = href; anchor.download = 'atlas-trip-board.txt'; anchor.click(); URL.revokeObjectURL(href); setMessage('Trip board exported.'); setTimeout(() => setMessage(''), 2200);
+    anchor.href = href; anchor.download = 'milemarker-trip-board.txt'; anchor.click(); URL.revokeObjectURL(href); setMessage('Trip board exported.'); setTimeout(() => setMessage(''), 2200);
   };
   return <section className="trip-page">
     <div className="trip-intro"><span className="eyebrow">A PLAN WITH ROOM TO WANDER</span><h1>Make a little<br/><em>room for wonder.</em></h1><p>Collect places, set the order, and export a simple field plan. Your board saves automatically in this browser.</p></div>

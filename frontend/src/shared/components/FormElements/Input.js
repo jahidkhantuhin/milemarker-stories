@@ -40,7 +40,7 @@ const Input = props => {
     dispatch({
       type: 'CHANGE',
       val: event.target.value,
-      validators: props.validators
+        validators: props.validators || []
     });
   };
 
@@ -56,6 +56,8 @@ const Input = props => {
         id={props.id}
         type={props.type}
         placeholder={props.placeholder}
+        min={props.min}
+        max={props.max}
         onChange={changeHandler}
         onBlur={touchHandler}
         value={inputState.value}
@@ -64,6 +66,7 @@ const Input = props => {
       <textarea
         id={props.id}
         rows={props.rows || 3}
+        placeholder={props.placeholder}
         onChange={changeHandler}
         onBlur={touchHandler}
         value={inputState.value}

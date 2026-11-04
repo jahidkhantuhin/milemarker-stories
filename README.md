@@ -1,12 +1,12 @@
-# Atlas — a field guide for curious people
+# Milemarker Stories — a field guide for curious people
 
 > Find your people. Save their places. Write your own story.
 
-Atlas is a responsive, full-stack travel journal that turns personal recommendations into a living map of the world. Browse notes from fellow travellers, explore the places behind them, and publish your own discoveries. It is designed as a polished product showcase, with a fully interactive local demo and an optional MongoDB-backed API.
+Milemarker Stories is a responsive, full-stack travel journal that turns personal recommendations into a living map of the world. Browse notes from fellow travellers, explore the places behind them, and publish your own discoveries. It is designed as a polished product showcase, with a fully interactive local demo and an optional MongoDB-backed API.
 
-**Repository name:** `atlas-travel-journal`  ·  **Product:** Atlas  ·  **Author:** Jahid Khan
+**Repository name candidate:** `milemarker-stories`  ·  **Product:** Milemarker Stories  ·  **Author:** Jahid Khan
 
-![Atlas travel journal interface](https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1600&q=85)
+![Milemarker Stories travel journal interface](https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1600&q=85)
 
 ## At a glance
 
@@ -21,6 +21,9 @@ Atlas is a responsive, full-stack travel journal that turns personal recommendat
 ## A small product, thoughtfully built
 
 - **Discover eight editorial field notes:** search by destination, mood, category, or tags, then sort by sample rating or indicative daily budget.
+- **Publish a place to Explore:** add a story, travel style, useful details, tags, and up to six photos. New stories show up in discovery immediately.
+- **Use the shared photo tools:** drag and drop or choose images, preview and remove them, then browse galleries with arrows, dots, or touch gestures.
+- **Keep ownership clear:** only the author sees edit and delete actions, and the API checks ownership on both operations.
 - **Save places:** build a personal shortlist that stays in this browser.
 - **Plan a route:** add and reorder destinations on a trip board, see indicative duration and spend, and export the plan as a text file.
 - **Share a note:** use the device share sheet or copy a link, and open destinations in Maps.
@@ -41,7 +44,7 @@ npm install
 npm start
 ```
 
-Open `http://localhost:3000`. Atlas starts with sample stories and uses a browser-local preview when its API cannot be reached. The preview is intended for presentation; it is not a production identity or storage system. Sign-up in preview mode uses the first sample profile. Destination budgets, ratings, seasons, and story copy are illustrative sample content, not live travel advice or verified prices.
+Open `http://localhost:3000`. Milemarker Stories starts with sample stories and uses a browser-local preview when its API cannot be reached. The preview is intended for presentation; it is not a production identity or storage system. Sign-up in preview mode uses the first sample profile. Destination budgets, ratings, seasons, and story copy are illustrative sample content, not live travel advice or verified prices.
 
 ### Full stack
 
@@ -51,7 +54,7 @@ Open `http://localhost:3000`. Atlas starts with sample stories and uses a browse
 
 ```dotenv
 PORT=5000
-MONGODB_URI=mongodb://127.0.0.1:27017/atlas
+MONGODB_URI=mongodb://127.0.0.1:27017/milemarker-stories
 JWT_SECRET=replace-with-a-long-random-secret
 CLIENT_ORIGIN=http://localhost:3000
 ```
@@ -81,9 +84,10 @@ backend/
 | GET | `/api/users` | List travellers |
 | POST | `/api/users/signup` | Create account (multipart image upload) |
 | POST | `/api/users/login` | Issue a signed session token |
+| GET | `/api/places` | List public place stories |
 | GET | `/api/places/:placeId` | Read a place |
 | GET | `/api/places/user/:userId` | Read a traveller's places |
-| POST | `/api/places` | Create a place (authenticated, multipart) |
+| POST | `/api/places` | Create a place with up to six photos (authenticated, multipart) |
 | PATCH | `/api/places/:placeId` | Update a place (authenticated) |
 | DELETE | `/api/places/:placeId` | Remove a place (authenticated) |
 
@@ -97,7 +101,7 @@ Before deploying, use HTTPS, restrict CORS to the actual client origin, validate
 
 ## Product notes
 
-Atlas began as a React Context and Hooks travel-list exercise and has been shaped into a presentable full-stack product. The current API retains the original Express/Mongoose organization, while the client includes a local preview path for reliable demos. The product name, sample writing, and sample content are designed for this portfolio presentation.
+Milemarker Stories began as a React Context and Hooks travel-list exercise and has been shaped into a presentable full-stack product. The current API retains the original Express/Mongoose organization, while the client includes a local preview path for reliable demos. The product name, sample writing, and sample content are designed for this portfolio presentation.
 
 ## License
 

@@ -7,6 +7,7 @@ const checkAuth = require("../middleware/check-auth");
 
 const router = express.Router();
 
+router.get("/", placesControllers.getAllPlaces);
 router.get("/:pid", placesControllers.getPlaceById);
 
 router.get("/user/:uid", placesControllers.getPlacesByUserId);
@@ -15,7 +16,7 @@ router.use(checkAuth);
 
 router.post(
   "/",
-  fileUpload.single("image"),
+  fileUpload.array("images", 6),
   [
     check("title").not().isEmpty(),
     check("description").isLength({ min: 5 }),

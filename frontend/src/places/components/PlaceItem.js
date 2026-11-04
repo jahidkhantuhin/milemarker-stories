@@ -7,6 +7,7 @@ import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { AuthContext } from "../../shared/context/auth-context";
 import { useHttpClient } from "../../shared/hooks/http-hook";
+import ImageCarousel from "../../shared/components/UIElements/ImageCarousel";
 import "./PlaceItem.css";
 
 const PlaceItem = (props) => {
@@ -65,10 +66,7 @@ const PlaceItem = (props) => {
         <Card className="place-item__content">
           {isLoading && <LoadingSpinner asOverlay />}
           <div className="place-item__image">
-            <img
-              src={props.image && (props.image.startsWith('http') || props.image.startsWith('blob:')) ? props.image : `${process.env.REACT_APP_API_URL || 'http://localhost:5000'}/${props.image}`}
-              alt={props.title}
-            />
+            <ImageCarousel images={props.images} image={props.image} title={props.title} />
           </div>
           <div className="place-item__info">
             <h2>{props.title}</h2>

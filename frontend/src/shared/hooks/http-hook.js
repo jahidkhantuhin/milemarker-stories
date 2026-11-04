@@ -15,27 +15,46 @@ function readData() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || initialData; } catch (error) { return initialData; }
 }
 function writeData(data) { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
-function demoRequest(url, method, body) {
+const fileAsPreview = (file) => new Promise((resolve) => {
+  const fallback = () => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => resolve(''); reader.readAsDataURL(file); };
+  if (!window.createImageBitmap) return fallback();
+  window.createImageBitmap(file).then((bitmap) => {
+    const scale = Math.min(1, 1400 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement('canvas'); canvas.width = Math.round(bitmap.width * scale); canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext('2d').drawImage(bitmap, 0, 0, canvas.width, canvas.height); bitmap.close(); resolve(canvas.toDataURL('image/jpeg', 0.78));
+  }).catch(fallback);
+});
+
+async function demoRequest(url, method, body) {
   const path = new URL(url, window.location.origin).pathname;
   const data = readData();
+  if (method === 'GET' && path === '/api/places') return { places: data.places.filter(place => String(place.id).startsWith('demo-created-')) };
   if (method === 'GET' && path.endsWith('/api/users')) return { users: data.users.map(user => ({ ...user, places: data.places.filter(place => place.creator === user.id) })) };
   const placesPath = path.match(/\/api\/places(?:\/user\/([^/]+)|\/([^/]+))?$/);
   if (method === 'GET' && placesPath && placesPath[1]) return { places: data.places.filter(place => place.creator === placesPath[1]) };
   if (method === 'GET' && placesPath && placesPath[2]) { const place = data.places.find(item => item.id === placesPath[2]); if (!place) throw new Error('That story could not be found.'); return { place }; }
-  const parse = () => body instanceof FormData ? Object.fromEntries(body.entries()) : (typeof body === 'string' ? JSON.parse(body) : body || {});
+  const parse = () => {
+    if (!(body instanceof FormData)) return typeof body === 'string' ? JSON.parse(body) : body || {};
+    const input = {};
+    body.forEach((value, key) => { if (key === 'images') input.images = [...(input.images || []), value]; else input[key] = value; });
+    return input;
+  };
   if (method === 'POST' && /\/api\/users\/(login|signup)$/.test(path)) {
     const input = parse(); const user = data.users.find(item => item.email === input.email) || data.users[0];
     return { userId: user.id, token: 'atlas-demo-session', email: user.email };
   }
   if (method === 'POST' && path.endsWith('/api/places')) {
-    const input = parse(); const place = { ...input, id: `place-${Date.now()}`, creator: 'demo-user', image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=85' };
+    const input = parse();
+    const images = await Promise.all((input.images || []).filter(file => file && file.size).map(fileAsPreview));
+    const place = { ...input, images, image: images[0], id: `demo-created-${Date.now()}`, creator: 'demo-user', creatorName: 'Jahid Khan', category: input.category || 'Community', vibe: input.vibe || 'A place worth sharing', bestTime: input.bestTime || 'Anytime', budget: Number(input.budget) || 0, days: Number(input.days) || 1, tags: String(input.tags || '').split(',').map(tag => tag.trim()).filter(Boolean), tip: input.tip || 'A note from the Milemarker Stories community.' };
     data.places.unshift(place); writeData(data); return { place };
   }
   if (method === 'PATCH' && placesPath && placesPath[2]) {
     const place = data.places.find(item => item.id === placesPath[2]); if (!place) throw new Error('That story could not be found.');
+    if (place.creator !== 'demo-user') throw new Error('You are not allowed to edit this place.');
     Object.assign(place, parse()); writeData(data); return { place };
   }
-  if (method === 'DELETE' && placesPath && placesPath[2]) { data.places = data.places.filter(item => item.id !== placesPath[2]); writeData(data); return { message: 'Deleted place.' }; }
+  if (method === 'DELETE' && placesPath && placesPath[2]) { const place = data.places.find(item => item.id === placesPath[2]); if (place && place.creator !== 'demo-user') throw new Error('You are not allowed to delete this place.'); data.places = data.places.filter(item => item.id !== placesPath[2]); writeData(data); return { message: 'Deleted place.' }; }
   throw new Error('This action is unavailable in the preview.');
 }
 
@@ -48,15 +67,18 @@ export const useHttpClient = () => {
     const controller = new AbortController(); activeHttpRequests.current.push(controller);
     try {
       let result;
+      let response;
       try {
-        const response = await fetch(url, { method, body, headers, signal: controller.signal });
-        const responseData = await response.json();
-        if (!response.ok) throw new Error(responseData.message || 'Request failed.');
-        result = responseData;
+        response = await fetch(url, { method, body, headers, signal: controller.signal });
       } catch (networkError) {
         if (networkError.name === 'AbortError') throw networkError;
         if (!/^https?:\/\/localhost:5000\//.test(url)) throw networkError;
-        result = demoRequest(url, method, body);
+        result = await demoRequest(url, method, body);
+      }
+      if (response) {
+        const responseData = await response.json();
+        if (!response.ok) throw new Error(responseData.message || 'Request failed.');
+        result = responseData;
       }
       return result;
     } catch (requestError) { setError(requestError.message); throw requestError; }
